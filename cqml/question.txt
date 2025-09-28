@@ -1,0 +1,119 @@
+
+1.介绍自己在公司的业务
+    主要技术栈是react, 维护过Vue的项目。
+    在公司主要负责
+    框架的搭建以及业务代码编写，构建了3个平台，重构了1个平台。
+    组件库的维护以及更新，为了提升业务代码构建速度，以及提升业务稳定性，实现了form表单与普通列表页面的配置化。
+    老旧业务优化：比如地图显示页面卡顿优化，对地图的瓦片作了缓存处理，使页面流畅得到极大的提升。
+    在任职期间帮助公司完成了
+    CI/CD的搭建，在公司gitlab与jinkens的基础上，构建了前端项目CI/CD流程。
+    
+2.jquery项目迁移的原因和动机？
+    主要是公司业务需求，对多个平台的业务整合需求，
+    还有就是react的框架的生态丰富，
+    而且react18后的并发更新，状态管理工具，极大保障了复杂页面的用户使用体验。
+    主管因素就是个人对react会比较熟悉。    
+
+3.组件库是怎么发布的？发布的编码形势？commonjs、umd、ES的区别是怎么选的？怎么区分公共组件与业务组件的？
+https://blog.csdn.net/sshuai131400/article/details/122181421
+
+4.redux/tookit与react-redux的区别？redux的原理？zusland的原理？与redux的区别？两个状态库的各自的特点？
+redux的基本原理：
+    采用发布订阅模式，全局数据管理，主要存储全局响应式的业务数据，具有单项数据循环的特点。
+    store是redux的全局状态管理工具，action是描述要发生什么的信息载体，reducer是根据action来更新状态的纯函数，三者相互协同。
+    js使用dispatch发出action，reducer接收action后，根据type去修改store中的数据，最后触发视图更新。
+react-redux
+    是一个与React集成的Redux绑定库，它提供了一些特定于React的功能和工具，以便更方便地在React应用中使用Redux。
+    react-redux的核心是两个主要的概念：Provider和connect。
+    Provider组件将Redux的store注入整个React应用中，使得所有的组件都能够访问到Redux的状态和操作。
+    connect函数用于连接React组件与Redux的状态和操作，通过将状态映射到组件的props，实现了Redux状态的读取和更新。
+    react-redux关注于Redux与React的结合，提供了React组件与Redux的无缝集成。
+    只能在react环境中使用。
+reduxjs/toolkit
+    是一个用于简化和优化Redux应用程序开发的工具包。它提供了一系列的实用工具和函数。
+    例如createSlice、createAsyncThunk和configureStore等，旨在简化Redux的使用和开发流程，减少样板代码，提供更直观和高效的API。
+    @reduxjs/toolkit关注于Redux的核心功能和最佳实践，属于Redux本身的范畴。
+zusland
+    借鉴Flux的简化模型，基于hooks提供状态的消费。
+    api极其简单，灵活性，高性能，独立于reactCotext,可以在react组件树外使用。
+
+公共基础组件是构建页面的最小单位，具有通用性，可配置性，无状态的特点。
+业务组件是业务逻辑组件，会根据接口设计，或者根据业务设计封装的组件。
+
+
+
+5.webpack中tree sharking是如何使用的？网络缓存手段如何提高开发效率？是否使用了cdn加速？tree sharking是否对有些文件会失效？
+    tree sharking：
+        树摇机制，
+        在运行过程中，静态分析模块之间的导入与导出关系，形成构件图。
+        确定es module模块中导入语句的变量，对没有使用的模块打上标记。
+        在编译过程中把死代码剔除，从而减少打包体积。
+
+        tree sharking会对使用commonjs动态引入的文件失效
+    网络缓存优化
+        压缩代码体积，压缩静态资源体积（比如图片修改为）
+        启用CDN加速
+        实现图片懒加载
+        利用浏览器的缓存策略
+    强缓存与协商缓存
+        强缓存：express（一个绝对时间）与 cache-control（设置的相对有效时间，max-age）
+        后端设置为强缓存后，前端请求时，在校验express与cache-control后有效，就会直接使用强缓存内容。
+        使用场景：js、css、静态资源（背景图，产品图标，）
+
+        协商缓存：etag（文件hash） 与 last-modifild(最后一次修改时间)
+        每次都会向服务端发送请求，服务端根据etag与last-modifild判断是否需要重新更新。
+        如果需要重新更新，则响应200，返回对应的文件，并加上etag与last-modifild。
+        不需要则返回304让浏览器直接使用缓存的内容。
+        使用场景：HTML页面、动态数据和JSON API
+
+6.错误监控系统是如何实现的？是否对http报错做过设置？当页面报错极度抽象，应该如何准确定位？
+    https://developer.aliyun.com/article/917060
+
+    对于异常信息可以分为两类：运行时错误、接口错误。
+    捕获代码错误，非Promise场景和Promise场景，因为两种场景捕获错误的策略不同
+
+    运行时错误（js错误）：语法错误、类型错误、范围错误、引用错误、eval错误、URL错误、资源加载错误。
+
+    非Promise:
+    export function listenerError() {
+        window.addEventListener('error', (event) => {
+            if (event.target.localName) {
+                console.log('这是资源错误', event);
+            }
+            else {
+                console.log('这是代码错误', event);
+            }
+        }, true)
+    };
+
+    Promise
+    export function listenerPromiseError() {
+        window.addEventListener('unhandledrejection', (event) => {
+            console.log('这是Promise场景中错误', event);
+        })
+    }
+
+    上传方式：
+    采用gif的images上传
+    
+
+7.框架搭建的时候应该思考那些问题？
+模块化设计，数据层和视图层分离，组件化模式，基于数据和事件的编程，多层次的架构设计
+
+8.interface 和 type 的区别？
+
+    1. 语法差异：
+    • interface 关键字用于声明接口，使用 interface 可以定义对象的形状、函数的签名等。
+    • type 关键字用于声明类型别名，可以给一个类型起一个新的名字。
+
+    2. 合并能力：
+    • interface 具有合并能力，即同名的接口会自动合并为一个接口，合并后的接口会继承所有同名接口的成员。
+    • type 不具有合并能力，同名的类型别名会报错。
+
+    3. 实现能力：
+    • interface 可以被类实现（使用 implements），用于类与接口的约束关系。
+    • type 不能被类实现，它只是给类型起别名，无法用于类与类型的约束关系。
+
+    4. 扩展能力：
+    • interface 可以通过 extends 关键字扩展其他接口或类，实现接口的继承。
+    • type 可以使用交叉类型（&）或联合类型（|）组合多个类型来创建新的类型。
