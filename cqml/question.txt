@@ -68,9 +68,25 @@ zusland
 
 6.错误监控系统是如何实现的？是否对http报错做过设置？当页面报错极度抽象，应该如何准确定位？
     https://developer.aliyun.com/article/917060
+    推荐：https://blog.csdn.net/gitblog_01101/article/details/151518143
+
+    主要是搞清楚：
+        react报错：
+            react的componentDidCatch捕捉错误, 再使用captureException主动上报
+        接口400/500报错：
+            sentry的captureException上报
+        路由报错:
+            window.addEventListener('error'，()=>{
+                .../
+                captureException
+                /...
+            })
+        性能采集
+            ...
+        
 
     对于异常信息可以分为两类：运行时错误、接口错误。
-    捕获代码错误，非Promise场景和Promise场景，因为两种场景捕获错误的策略不同
+    捕获代码错误，非Promise场景和Promise场景，因为两种场景捕获错误的策略不同。
 
     运行时错误（js错误）：语法错误、类型错误、范围错误、引用错误、eval错误、URL错误、资源加载错误。
 
@@ -103,12 +119,12 @@ zusland
 8.interface 和 type 的区别？
 
     1. 语法差异：
-    • interface 关键字用于声明接口，使用 interface 可以定义对象的形状、函数的签名等。
-    • type 关键字用于声明类型别名，可以给一个类型起一个新的名字。
+      interface 关键字用于声明接口，使用 interface 可以定义对象的形状、函数的签名等。
+      type 关键字用于声明类型别名，可以给一个类型起一个新的名字。
 
     2. 合并能力：
-    • interface 具有合并能力，即同名的接口会自动合并为一个接口，合并后的接口会继承所有同名接口的成员。
-    • type 不具有合并能力，同名的类型别名会报错。
+      interface 具有合并能力，即同名的接口会自动合并为一个接口，合并后的接口会继承所有同名接口的成员。
+      type 不具有合并能力，同名的类型别名会报错。
 
     3. 实现能力：
     • interface 可以被类实现（使用 implements），用于类与接口的约束关系。
